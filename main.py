@@ -2,12 +2,10 @@ import datetime
 from os.path import dirname, join
 
 import pandas as pd
-from scipy.signal import savgol_filter
 
 from bokeh.io import curdoc
 from bokeh.layouts import column, row
-from bokeh.models import ColumnDataSource, DataRange1d, Select, BoxSelectTool, HoverTool
-from bokeh.palettes import Blues4
+from bokeh.models import ColumnDataSource, Select, BoxSelectTool, HoverTool
 from bokeh.plotting import figure
 
 
@@ -27,19 +25,19 @@ def make_plot(source, title):
     plot = figure(title=title, x_axis_type="datetime", plot_width=800,
                     x_axis_label=None, y_axis_label=None)
 
-    plot.line('date', 'temp',color=Blues4[1], source=source , legend_label="Temperature",line_width=3, alpha=0.7)
-    plot.line('date', 'windspeed',color=Blues4[2], source=source , legend_label="Wind Speed",line_width=2, alpha=0.7)
-    plot.line('date', 'humidity',color=Blues4[3], source=source , legend_label="Humidity",line_width=2, alpha=0.7)
+    plot.line('date', 'temp',color='#ebbd5b', source=source , legend_label="Temperature",line_width=3, alpha=0.8)
+    plot.line('date', 'windspeed',color='#40ad5a', source=source , legend_label="Wind Speed",line_width=3, alpha=0.8)
+    plot.line('date', 'humidity',color='#7f4ebf', source=source , legend_label="Humidity",line_width=3, alpha=0.8)
 
     plot.add_tools(HoverTool(
         tooltips=[
-            ('Date', '@date{%Y-%m-%d}'),
+            ('Date', '@date{%F}'),
             ('Temperature', '@temp °C'),
             ('Wind Speed', '@windspeed km/h'),
             ('Humidity', '@humidity %'),
         ],
         formatters={
-            'date'      : 'datetime',
+            '@date': 'datetime',
         },
         mode='mouse'
     ))
@@ -48,7 +46,7 @@ def make_plot(source, title):
 
 def update_plot(attrname, old, new):
     city = city_select.value
-    plot.title.text = "Weather data for " + cities[city]['title']
+    plot.title.text = "Données météo pour " + cities[city]['title']
 
     src = get_dataset(df, cities[city]['ville'])
     source.data.update(src.data)
@@ -56,12 +54,40 @@ def update_plot(attrname, old, new):
 city = 'Casablanca'
 cities = {
     'Casablanca': {
-        'ville': 'CASA',
+        'ville': 'casa',
         'title': 'Casablanca, MA',
     },
-    'Fes': {
-        'ville': 'FES',
+    'El Jadida': {
+        'ville': 'jadida',
+        'title': 'El Jadida, MA',
+    },
+    'Rabat': {
+        'ville': 'rabat',
+        'title': 'Rabat, MA',
+    },
+    'Kénitra': {
+        'ville': 'kenitra',
+        'title': 'Kénitra, MA',
+    },
+    'Agadir': {
+        'ville': 'agadir',
+        'title': 'Agadir, MA',
+    },
+    'Fès': {
+        'ville': 'fes',
         'title': 'Fès, MA',
+    },
+    'Meknès': {
+        'ville': 'meknes',
+        'title': 'Meknès, MA',
+    },
+    'Safi': {
+        'ville': 'safi',
+        'title': 'Safi, MA',
+    },
+    'Marrakech': {
+        'ville': 'Marrakech',
+        'title': 'Marrakech, MA',
     }
 }
 
@@ -70,10 +96,10 @@ city_select = Select(value=city, title='City', options=sorted(cities.keys()))
 df = pd.read_csv(join(dirname(__file__), 'data/bestone.csv'))
 source = get_dataset(df, cities[city]['ville'])
 
-plot = make_plot(source, "Weather data for " + cities[city]['title'])
+plot = make_plot(source, "Données météo pour " + cities[city]['title'])
 
 city_select.on_change('value', update_plot)
 
 controls = column(city_select)
 curdoc().add_root(row(plot, controls))
-curdoc().title = "Weather"
+curdoc().title = "La météo"
