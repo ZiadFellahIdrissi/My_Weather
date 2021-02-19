@@ -1,0 +1,38 @@
+{
+   "Casablanca":{
+      "ville":"casa",
+      "title":"Casablanca, MA"
+   },
+   "El Jadida":{
+      "ville":"jadida",
+      "title":"El Jadida, MA"
+   },
+   "Rabat":{
+      "ville":"rabat",
+      "title":"Rabat, MA"
+   },
+   "Kénitra":{
+      "ville":"kenitra",
+      "title":"Kénitra, MA"
+   },
+   "Agadir":{
+      "ville":"agadir",
+      "title":"Agadir, MA"
+   },
+   "Fès":{
+      "ville":"fes",
+      "title":"Fès, MA"
+   },
+   "Meknès":{
+      "ville":"meknes",
+      "title":"Meknès, MA"
+   },
+   "Safi":{
+      "ville":"safi",
+      "title":"Safi, MA"
+   },
+   "Marrakech":{
+      "ville":"Marrakech",
+      "title":"Marrakech, MA"
+   }
+}
