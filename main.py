@@ -1,4 +1,5 @@
-import datetime
+import datetime as dt
+from datetime import date,time
 from os.path import dirname, join
 
 import pandas as pd
@@ -6,7 +7,7 @@ import json
 
 from bokeh.io import curdoc
 from bokeh.layouts import column, row
-from bokeh.models import ColumnDataSource, Select, BoxSelectTool, HoverTool
+from bokeh.models import ColumnDataSource, Select, BoxSelectTool,DateRangeSlider, HoverTool
 from bokeh.plotting import figure
 
 # Chargement des données
@@ -14,11 +15,20 @@ df = pd.read_csv(join(dirname(__file__), 'data/villes_donnees.csv'))
 cities_file = open(join(dirname(__file__), 'data/villes.json'), "r")
 cities = json.load(cities_file)
 city = 'Casablanca' # Ville par défaut
+dateDefaut = (date(2021, 2, 8), date(2021, 2, 12)) # Ville par défaut
 
-def get_dataset(src, name):
-    df = src[src.ville == name].copy()
+def get_dataset(src, name, mydate):
+    src['date'] = pd.to_datetime(src.date)
+    start_date = dt.datetime.combine(mydate[0], time(0,0,0))
+    end_date   = dt.datetime.combine(mydate[1], time(23,0,0))
+
+    after_start_date = src['date'] >= start_date
+    before_end_date = src['date'] <= end_date
+    between_two_dates = after_start_date & before_end_date
+    filtered_dates = src.loc[between_two_dates]
+
+    df = filtered_dates[filtered_dates.ville==name].copy()
     del df['ville']
-    df['date'] = pd.to_datetime(df.date)
     data = dict(
                 temp=df.temperature,
                 windspeed=df['vitessevent'],
@@ -52,19 +62,22 @@ def make_plot(source, title):
 
 def update_plot(attrname, old, new):
     city = city_select.value
+    dateDefaut = date_select.value
     plot.title.text = "Données météo pour " + cities[city]['title']
 
-    src = get_dataset(df, cities[city]['ville'])
+    src = get_dataset(df, cities[city]['ville'],dateDefaut)
     source.data.update(src.data)
     
 city_select = Select(value=city, title='City', options=sorted(cities.keys()))
+date_select = DateRangeSlider(value=dateDefaut, title='Intervale de date', start=date(2021,2,5), end=date(2021,2,19))
 
-source = get_dataset(df, cities[city]['ville'])
+source = get_dataset(df, cities[city]['ville'],dateDefaut)
 
 plot = make_plot(source, "Météo " + cities[city]['title'])
 
 city_select.on_change('value', update_plot)
+date_select.on_change('value', update_plot)
 
-controls = column(city_select)
+controls = column(city_select,date_select)
 curdoc().add_root(row(plot, controls))
 curdoc().title = "La météo"
