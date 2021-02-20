@@ -7,7 +7,7 @@ import json
 
 from bokeh.io import curdoc
 from bokeh.layouts import column, row
-from bokeh.models import ColumnDataSource, Select, BoxSelectTool,DateRangeSlider, HoverTool
+from bokeh.models import ColumnDataSource, Select, BoxSelectTool, DateRangeSlider, HoverTool
 from bokeh.plotting import figure
 
 # Chargement des données
@@ -62,14 +62,18 @@ def make_plot(source, title):
 
 def update_plot(attrname, old, new):
     city = city_select.value
-    dateDefaut = date_select.value
-    plot.title.text = "Données météo pour " + cities[city]['title']
 
-    src = get_dataset(df, cities[city]['ville'],dateDefaut)
+    start_date = dt.datetime.fromtimestamp(date_select.value[0]/1000)
+    end_date = dt.datetime.fromtimestamp(date_select.value[1]/1000)
+    new_date = (start_date, end_date)
+
+    plot.title.text = "Météo " + cities[city]['title']
+
+    src = get_dataset(df, cities[city]['ville'], new_date)
     source.data.update(src.data)
     
 city_select = Select(value=city, title='City', options=sorted(cities.keys()))
-date_select = DateRangeSlider(value=dateDefaut, title='Intervale de date', start=date(2021,2,5), end=date(2021,2,19))
+date_select = DateRangeSlider(value=dateDefaut, title='Date', start=date(2021,2,5), end=date(2021,2,19))
 
 source = get_dataset(df, cities[city]['ville'],dateDefaut)
 
