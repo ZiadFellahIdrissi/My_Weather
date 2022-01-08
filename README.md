@@ -1,4 +1,4 @@
-# My Weather
+# [My Weather](https://github.com/ZiadFellahIdrissi/My_Weather)
 Implementation of a weather web application that allows to visualize the temperature, humidity and wind speed interactively using the 'Bokeh' library
 
 ## Technologies
